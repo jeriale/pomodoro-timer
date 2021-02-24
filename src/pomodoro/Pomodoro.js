@@ -7,9 +7,9 @@ import TimerSettings from "./TimerSettings";
 // Utilities
 import useInterval from "../utils/useInterval";
 
-const audioElement = new Audio(`${process.env.PUBLIC_URL}/alarm/submarine-dive-horn.mp3`);
-
 function Pomodoro() {
+
+  const audioElement = document.getElementsByClassName("audio-element")[0];
 
   const initialState = {
     activeSession: false,
@@ -19,7 +19,7 @@ function Pomodoro() {
     focusSetting: 25,
     breakSetting: 5,
     // Seconds
-    focusElapsed: 298,
+    focusElapsed: 0,
     breakElapsed: 0,
   };
 
@@ -78,14 +78,14 @@ function Pomodoro() {
     () => {
       // Check for 100% progress & switch session type
       if ((focusSetting * 60) === focusElapsed) {
-        playAudio();
+        audioElement.play();
         setTimerData({
           ...timerData,
           onBreak: true,
           focusElapsed: 0
         });
       } else if ((breakSetting * 60) === breakElapsed) {
-        playAudio();
+        audioElement.play();
         setTimerData({
           ...timerData,
           onBreak: false,
@@ -111,22 +111,15 @@ function Pomodoro() {
     timerRunning ? 1000 : null
   );
 
-  async function playAudio() {
-    try {
-      await audioElement.load()
-      audioElement.play()
-      .catch(console.log)
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   return (
     <div className="pomodoro">
       <TimerSettings {...timerData} changeTimerSetting={handleTimerSettingChange} />
       <TimerControls {...timerData} playPause={playPause} terminate={terminateSession} /> 
       <Durations {...timerData} />
       <ProgressBar {...timerData} />
+      <audio className="audio-element">
+        <source src="https://assets.coderrocketfuel.com/pomodoro-times-up.mp3"></source>
+      </audio>
     </div>
   );
 }
